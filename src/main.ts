@@ -22,6 +22,7 @@ import {
 } from './settings';
 import { TooltipManager } from './tooltip';
 import { ReferenceListView, viewType } from './view';
+import { processReferenceBlock, referenceBlockLang } from './referenceBlock';
 import { PromiseCapability, getVaultRoot, migrateCacheDir } from './helpers';
 import path from 'path';
 import { BibManager } from './bib/bibManager';
@@ -72,6 +73,10 @@ export default class ReferenceList extends Plugin {
     this.registerEditorSuggest(new CiteSuggest(app, this));
     this.tooltipManager = new TooltipManager(this);
     this.registerMarkdownPostProcessor(processCiteKeys(this));
+    this.registerMarkdownCodeBlockProcessor(
+      referenceBlockLang,
+      processReferenceBlock(this)
+    );
     this.registerEditorExtension([
       bibManagerField.init(() => this.bibManager),
       citeKeyCacheField,

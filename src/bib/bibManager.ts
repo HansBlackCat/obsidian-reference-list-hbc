@@ -52,6 +52,10 @@ export interface FileCache {
   resolvedKeys: Set<string>;
   unresolvedKeys: Set<string>;
   bib: HTMLElement;
+  // The bibliography before prepBibHTML attaches its click handlers. Kept so a
+  // second copy can be built for the note itself: the prepared element carries
+  // listeners that a cloneNode would drop, and a DOM node has one parent.
+  bibHTML: string | null;
   citations: RenderedCitation[];
   citeBibMap: Map<string, string>;
 
@@ -684,6 +688,7 @@ export class BibManager {
         resolvedKeys,
         unresolvedKeys,
         bib: null,
+        bibHTML: null,
         citations: [],
         citeBibMap,
         settings: null,
@@ -768,6 +773,7 @@ export class BibManager {
       resolvedKeys,
       unresolvedKeys,
       bib: parsed,
+      bibHTML: entries.length ? htmlStr.join('') : null,
       citations,
       citeBibMap,
       settings,
@@ -909,7 +915,22 @@ export class BibManager {
     return parsed;
   }
 
+  // Build a second, independent bibliography element for a file: the one in
+  // `FileCache.bib` belongs to the sidebar view.
+  renderBibliography(file: TFile): HTMLElement | null {
+    const cache = this.fileCache.get(file);
+    if (!cache?.bibHTML) return null;
+
+    const parsed = new DOMParser().parseFromString(cache.bibHTML, 'text/html')
+      .body.firstElementChild as HTMLElement;
+    if (!parsed) return null;
+
+    return this.prepBibHTML(parsed, file);
+  }
+
   dispatchResult(file: TFile, result: FileCache) {
+    this.plugin.emitter.trigger('referencesUpdated', file);
+
     app.workspace.getLeavesOfType('markdown').forEach((l) => {
       const view = l.view as MarkdownView;
       if (view.file === file) {

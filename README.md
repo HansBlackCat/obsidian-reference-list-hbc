@@ -11,10 +11,25 @@ Set up instructions:
 - (Optional) Supply a path or URL to a compatible [CSL style](https://citationstyles.org/)
 - Run "Reference List HBC: Show reference list" from Obsidian command palette to display References tab in the sidebar
 
+To put the reference list in the note itself, the way a paper does, add an empty `references` block where it should appear:
+
+~~~markdown
+## References
+
+```references
+```
+~~~
+
+It renders in reading mode and live preview, stays in sync with the document, and is numbered consistently with the inline citations (both come from a single citeproc pass over the note).
+
 <img src="https://raw.githubusercontent.com/mgmeyers/obsidian-pandoc-reference-list/main/Screen%20Shot.png" alt="A screenshot of the plugin's works cited list">
 
 
 ## Changelog
+
+### v1.2.0
+
+- A `references` code block renders the document's bibliography in the note itself, next to where a paper would put it. Reading mode and live preview both render it, and it refreshes when the bibliography changes
 
 ### v1.1.2
 

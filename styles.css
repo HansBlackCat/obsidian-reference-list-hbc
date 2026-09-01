@@ -423,3 +423,20 @@ body {
 .pwc-path-status.is-error {
   color: var(--text-error);
 }
+
+.pwc-embedded-reference-list .csl-entry-wrapper {
+  padding: 0.5em 0;
+}
+
+.pwc-embedded-reference-list .csl-entry-wrapper:not(:last-child) {
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.pwc-embedded-reference-list .csl-entry {
+  font-size: inherit;
+}
+
+.pwc-embedded-reference-list .pwc-no-content {
+  padding: 0;
+  font-size: inherit;
+}
