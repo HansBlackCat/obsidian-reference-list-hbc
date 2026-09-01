@@ -1,5 +1,4 @@
-import { Notice, PluginSettingTab, Setting, TextComponent } from 'obsidian';
-import which from 'which';
+import { PluginSettingTab, Setting, TextComponent } from 'obsidian';
 
 import { t } from './lang/helpers';
 import ReferenceList from './main';
@@ -16,10 +15,11 @@ import {
 import { cslListRaw } from './bib/cslList';
 import { langListRaw } from './bib/cslLangList';
 import { ZoteroPullSetting } from './settings/ZoteroPullSetting';
-import { getPandocPath, getVaultRoot } from './helpers';
+import { getVaultRoot } from './helpers';
 
 export const DEFAULT_SETTINGS: ReferenceListSettings = {
   pathToPandoc: '',
+  pathToPandocFallback: '',
   tooltipDelay: 400,
   zoteroGroups: [],
   renderCitations: true,
@@ -34,7 +34,11 @@ export interface ZoteroGroup {
 }
 
 export interface ReferenceListSettings {
+  // The path actually used to invoke pandoc: auto detected when possible,
+  // otherwise a copy of pathToPandocFallback.
   pathToPandoc: string;
+  // User supplied path, never overwritten by auto detection.
+  pathToPandocFallback: string;
   pathToBibliography?: string;
 
   cslStyleURL?: string;
@@ -76,63 +80,57 @@ export class ReferenceListSettingsTab extends PluginSettingTab {
       )
       .then((setting) => {
         setting.addText((text) => {
-            text.setValue(getVaultRoot());
+          text.setValue(getVaultRoot() ?? '');
           text.setDisabled(true);
         });
-      })
+      });
 
+    let detectedInput: TextComponent;
     new Setting(containerEl)
       .setName(t('Pandoc executable path (auto detected)'))
       .setDesc(
         t(
-          "The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section."
+          'The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section.'
         )
       )
       .then((setting) => {
         setting.addText((text) => {
-          getPandocPath().then((path) => {
-            text.setValue(path);
-            this.plugin.settings.pathToPandoc = path;
-            this.plugin.saveSettings();
+          detectedInput = text;
+          text.setValue(this.plugin.settings.pathToPandoc);
+          text.setDisabled(true);
+        });
+
+        setting.addExtraButton((b) => {
+          b.setIcon('magnifying-glass');
+          b.setTooltip(t('Attempt to find Pandoc automatically'));
+          b.onClick(() => {
+            this.plugin.resolvePandocPath(true).then((pathToPandoc) => {
+              detectedInput.setValue(pathToPandoc);
+            });
           });
-          text.setDisabled(true);          
         });
-        });
-
-        // setting.addExtraButton((b) => {
-        //   b.setIcon('magnifying-glass');
-        //   b.setTooltip(t('Attempt to find Pandoc automatically'));
-        //   b.onClick(() => {
-        //     which('pandoc')
-        //       .then((pathToPandoc) => {
-        //         if (pathToPandoc) {
-        //           input.setValue(pathToPandoc);
-
-        //           this.plugin.settings.pathToPandoc = pathToPandoc;
-        //           this.plugin.saveSettings();
-        //         } else {
-        //           new Notice(
-        //             t(
-        //               'Unable to find pandoc on your system. If it is installed, please manually enter a path.'
-        //             )
-        //           );
-        //         }
-        //       })
-        //       .catch((e) => {
-        //         new Notice(
-        //           t(
-        //             'Unable to find pandoc on your system. If it is installed, please manually enter a path.'
-        //           )
-        //         );
-        //         console.error(e);
-        //       });
-        //   });
-        // });
+      });
 
     new Setting(containerEl)
       .setName(t('Fallback path to Pandoc'))
-      .setDesc(t('Fallback path to Pandoc executable.'))
-
+      .setDesc(
+        t(
+          "Used when pandoc cannot be located automatically. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows."
+        )
+      )
+      .then((setting) => {
+        setting.addText((text) => {
+          text
+            .setValue(this.plugin.settings.pathToPandocFallback)
+            .onChange((value) => {
+              this.plugin.settings.pathToPandocFallback = value;
+              this.plugin.saveSettings();
+              this.plugin.resolvePandocPath().then((pathToPandoc) => {
+                detectedInput.setValue(pathToPandoc);
+              });
+            });
+        });
+      });
 
     new Setting(containerEl)
       .setName(t('Path to bibliography file'))

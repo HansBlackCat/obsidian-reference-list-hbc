@@ -21,7 +21,6 @@ import testYAMLCSL from './test.yaml.json';
 // @ts-ignore
 // import library from './My Library.json';
 import { existsSync, rmSync } from 'fs';
-import { getVaultRoot } from 'src/helpers';
 
 describe('bibToCSL()', () => {
   it('returns json from json', async () => {
@@ -85,8 +84,7 @@ describe('getStyle()', () => {
     const style = await getCSLStyle(
       cache,
       __dirname,
-      'https://www.zotero.org/styles/australian-guide-to-legal-citation-3rd-edition',
-      getVaultRoot
+      'https://www.zotero.org/styles/australian-guide-to-legal-citation-3rd-edition'
     );
     expect(typeof style).toBe('string');
     expect(
@@ -97,12 +95,38 @@ describe('getStyle()', () => {
     await getCSLStyle(
       cache,
       __dirname,
-      'australian-guide-to-legal-citation-3rd-edition',
-      getVaultRoot
+      'australian-guide-to-legal-citation-3rd-edition'
     );
     rmSync(
       path.join(__dirname, 'australian-guide-to-legal-citation-3rd-edition')
     );
+  });
+
+  it('resolves an explicit style path relative to the vault root', async () => {
+    const cache = new Map<string, string>();
+    const vaultRoot = path.join(__dirname, '..', '..', '..');
+    const relativePath = path.join('src', 'parser', 'tests', 'apa.csl');
+
+    const style = await getCSLStyle(
+      cache,
+      __dirname,
+      relativePath,
+      () => vaultRoot,
+      relativePath
+    );
+
+    expect(typeof style).toBe('string');
+    // The cache must be keyed by the path as configured, since that is what
+    // callers look styles up with.
+    expect(cache.has(relativePath)).toBe(true);
+    expect(cache.get(relativePath)).toBe(style);
+  });
+
+  it('throws when an explicit style path cannot be resolved', async () => {
+    const cache = new Map<string, string>();
+    await expect(
+      getCSLStyle(cache, __dirname, 'nope.csl', () => __dirname, 'nope.csl')
+    ).rejects.toThrow("Cannot find file 'nope.csl'");
   });
 });
 

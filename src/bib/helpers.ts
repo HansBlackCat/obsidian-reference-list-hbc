@@ -14,20 +14,32 @@ function ensureDir(dir: string) {
   }
 }
 
-export function getBibPath(bibPath: string, getVaultRoot?: () => string) {
-  if (!fs.existsSync(bibPath)) {
-    const orig = bibPath;
-    if (getVaultRoot) {
-      bibPath = path.join(getVaultRoot(), bibPath);
-      if (!fs.existsSync(bibPath)) {
-        throw new Error(`bibToCSL: cannot access bibliography file '${bibPath}'.`);
-      }
-    } else {
-      throw new Error(`bibToCSL: cannot access bibliography file '${orig}'.`);
-    }
+// Resolve a user supplied path: try it as given (absolute, or relative to the
+// process cwd), then relative to the vault root. Returns null if neither exists.
+export function resolveVaultPath(
+  filePath: string,
+  getVaultRoot?: () => string
+): string | null {
+  if (!filePath) return null;
+  if (fs.existsSync(filePath)) return filePath;
+
+  const root = getVaultRoot?.();
+  if (root) {
+    const fromVault = path.join(root, filePath);
+    if (fs.existsSync(fromVault)) return fromVault;
   }
 
-  return bibPath;
+  return null;
+}
+
+export function getBibPath(bibPath: string, getVaultRoot?: () => string) {
+  const resolved = resolveVaultPath(bibPath, getVaultRoot);
+
+  if (!resolved) {
+    throw new Error(`bibToCSL: cannot access bibliography file '${bibPath}'.`);
+  }
+
+  return resolved;
 }
 
 export async function bibToCSL(
@@ -119,32 +131,26 @@ export async function getCSLStyle(
   cacheDir: string,
   url: string,
   getVaultRoot?: () => string,
-  explicitPath?: string,
+  explicitPath?: string
 ) {
   if (explicitPath) {
-    let cslPath = explicitPath;
-    const cslBaseName = path.basename(cslPath);
-    if (styleCache.has(cslBaseName)) {
-      return styleCache.get(cslBaseName);
+    // Cache under the path exactly as it was configured: callers look styles up
+    // with the same string they pass in here, so the key must not be rewritten
+    // to the resolved (absolute) path.
+    if (styleCache.has(explicitPath)) {
+      return styleCache.get(explicitPath);
     }
 
-    if (!fs.existsSync(explicitPath)) {
-      if (getVaultRoot) {
-        cslPath = path.join(getVaultRoot(), explicitPath);
-        if (!fs.existsSync(cslPath)) {
-          throw new Error(
-            `Error: retrieving citation style (relative); Cannot find file '${cslPath}'.`
-          );
-        }
-      } else {
-        throw new Error(
-            `Error: retrieving citation style; Cannot find file '${explicitPath}'.`
-        );
-      }
+    const cslPath = resolveVaultPath(explicitPath, getVaultRoot);
+
+    if (!cslPath) {
+      throw new Error(
+        `Error: retrieving citation style; Cannot find file '${explicitPath}'.`
+      );
     }
 
     const styleData = fs.readFileSync(cslPath).toString();
-    styleCache.set(cslBaseName, styleData);
+    styleCache.set(explicitPath, styleData);
     return styleData;
   }
 

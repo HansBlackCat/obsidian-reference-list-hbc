@@ -2,13 +2,12 @@ import {
   Events,
   MarkdownView,
   Menu,
+  Notice,
   Plugin,
   WorkspaceLeaf,
   debounce,
   setIcon,
 } from 'obsidian';
-import which from 'which';
-
 import {
   citeKeyCacheField,
   citeKeyPlugin,
@@ -24,7 +23,12 @@ import {
 } from './settings';
 import { TooltipManager } from './tooltip';
 import { ReferenceListView, viewType } from './view';
-import { PromiseCapability, fixPath, getVaultRoot } from './helpers';
+import {
+  PromiseCapability,
+  fixPath,
+  getPandocPath,
+  getVaultRoot,
+} from './helpers';
 import path from 'path';
 import { BibManager } from './bib/bibManager';
 import { CiteSuggest } from './citeSuggest/citeSuggest';
@@ -81,30 +85,9 @@ export default class ReferenceList extends Plugin {
 
     // No need to block execution
     fixPath().then(async () => {
-      let whichPandoc: string | null = null;
-      try {
-        whichPandoc = await which('pandoc');
-        this.settings.pathToPandoc = whichPandoc;
-        this.saveSettingsOnly();
-      } catch (e) {
-        if (this.settings.pathToPandoc) {
-          whichPandoc = this.settings.pathToPandoc;
-        } else {
-          throw new Error("Error finding pandoc. Please set the path manually in the plugin settings.");
-        }
-      }
-
-      if (!this.settings.pathToPandoc) {
-        try {
-          // Attempt to find if/where pandoc is located on the user's machine
-          const pathToPandoc = await which('pandoc');
-          this.settings.pathToPandoc = pathToPandoc;
-          this.saveSettingsOnly();
-        } catch {
-          // We can ignore any errors here
-          throw new Error("Error finding pandoc. Please set the path manually in the plugin settings.");
-        }
-      }
+      // Never let a failed lookup block init: without pandoc the plugin still
+      // works with CSL JSON bibliographies.
+      await this.resolvePandocPath();
 
       this.initPromise.resolve();
       this.app.workspace.trigger('parse-style-settings');
@@ -319,9 +302,26 @@ export default class ReferenceList extends Plugin {
     await this.saveData(this.settings);
   }
 
-  async saveSettingsOnly(cb?: () => void) {
-    this.emitSettingsUpdate(cb);
-    await this.saveData(this.settings);
+  // Auto detected pandoc wins; the user supplied fallback is only used when the
+  // lookup fails, and is never overwritten by it.
+  async resolvePandocPath(notifyOnFailure = false) {
+    const detected = await getPandocPath();
+    const resolved = detected || this.settings.pathToPandocFallback || '';
+
+    if (resolved !== this.settings.pathToPandoc) {
+      this.settings.pathToPandoc = resolved;
+      await this.saveSettings();
+    }
+
+    if (!resolved && notifyOnFailure) {
+      new Notice(
+        t(
+          'Unable to find pandoc on your system. If it is installed, please manually enter a path.'
+        )
+      );
+    }
+
+    return resolved;
   }
 
   emitSettingsUpdate = debounce(

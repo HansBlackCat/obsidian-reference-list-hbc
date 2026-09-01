@@ -17,6 +17,14 @@ Set up instructions:
 
 ## Changelog
 
+### v1.0.1
+
+- Fix relative CSL paths: styles were cached under a different key than the one they are looked up with, which silently disabled every explicit CSL path (relative *and* absolute)
+- Fix the plugin hanging on startup when pandoc cannot be found; references now load regardless (pandoc is only required for non-CSL-JSON bibliographies)
+- Restore the "Fallback path to Pandoc" input. Auto detection no longer overwrites it: the fallback is kept in its own setting and used only when detection fails
+- Relative paths in frontmatter (`bibliography`, `csl`) resolve next to the note first, then relative to the vault root; a note setting only `csl`/`lang` no longer throws
+- Plugin id corrected to `obsidian-pandoc-reference-list-hbc`; package metadata (name, version, license) synced with the manifest
+
 ### v1.0.0 (From 2.0.25)
 
 - "Fallback path to Pandoc" doesn't automatically renewed

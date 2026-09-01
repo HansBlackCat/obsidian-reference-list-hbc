@@ -64,6 +64,25 @@ export interface FileCache {
   };
 }
 
+// Resolve a path set in a note's frontmatter. Relative paths are looked up
+// next to the note first, then relative to the vault root. URLs and paths that
+// cannot be resolved are returned untouched.
+function resolveScopedPath(file: TFile, filePath?: string) {
+  if (!filePath || /^http/.test(filePath)) return filePath;
+  if (existsSync(filePath)) return filePath;
+
+  const root = getVaultRoot();
+  if (!root) return filePath;
+
+  const nextToNote = path.join(root, path.dirname(file.path), filePath);
+  if (existsSync(nextToNote)) return nextToNote;
+
+  const fromVaultRoot = path.join(root, filePath);
+  if (existsSync(fromVaultRoot)) return fromVaultRoot;
+
+  return filePath;
+}
+
 function getScopedSettings(file: TFile): ScopedSettings {
   const metadata = app.metadataCache.getFileCache(file);
   const output: ScopedSettings = {};
@@ -88,10 +107,8 @@ function getScopedSettings(file: TFile): ScopedSettings {
     return null;
   }
 
-  // Checks whether the bibliography is a relative path and replaces the path with an absolute one
-  if (existsSync(path.join(getVaultRoot(), path.dirname(file.path), output.bibliography))){
-    output.bibliography = path.join(getVaultRoot(), path.dirname(file.path), output.bibliography);
-  }
+  output.bibliography = resolveScopedPath(file, output.bibliography);
+  output.style = resolveScopedPath(file, output.style);
 
   return output;
 }

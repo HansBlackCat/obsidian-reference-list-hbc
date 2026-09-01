@@ -3,11 +3,14 @@
 export default {
   // src/settings.ts
   'Current vault root': 'Current vault root',
-  'The root path of your current vault. This is used to resolve relative paths in your bibliography and CSL files.':'The root path of your current vault. This is used to resolve relative paths in your bibliography and CSL files.',
+  'The root path of your current vault. This is used to resolve relative paths in your bibliography and CSL files.':
+    'The root path of your current vault. This is used to resolve relative paths in your bibliography and CSL files.',
   'Path to bibliography file': 'Path to bibliography file',
   'Select a bibliography file.': 'Select a bibliography file.',
-  'The absolute path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter.': 'The absolute path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter.',
-  'The path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter. Can be an absolute path or one relative to your vault.': 'The path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter. Can be an absolute path or one relative to your vault.',
+  'The absolute path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter.':
+    'The absolute path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter.',
+  'The path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter. Can be an absolute path or one relative to your vault.':
+    'The path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter. Can be an absolute path or one relative to your vault.',
   'Custom citation style': 'Custom citation style',
   'Citation style': 'Citation style',
   'Citation style language': 'Citation style language',
@@ -16,12 +19,15 @@ export default {
     'Path to a CSL file. This can be an absolute path or one relative to your vault. This will override the style selected above. This can be overridden on a per-file basis by setting "csl" or "citation-style" in the file\'s frontmatter. A URL can be supplied when setting the style via frontmatter.',
   'Select a CSL file located on your computer':
     'Select a CSL file located on your computer',
-  'Pandoc executable path (auto detected)': 'Pandoc executable path (auto detected)',
-  "The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section.":"The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section.",
+  'Pandoc executable path (auto detected)':
+    'Pandoc executable path (auto detected)',
+  'The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section.':
+    'The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section.',
   "The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and will use this path if it fails to do so. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows.":
     "The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and will use this path if it fails to do so. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows.",
   'Fallback path to Pandoc': 'Fallback path to Pandoc',
-  'Fallback path to Pandoc executable.': 'Fallback path to Pandoc executable.',
+  "Used when pandoc cannot be located automatically. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows.":
+    "Used when pandoc cannot be located automatically. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows.",
   'Attempt to find Pandoc automatically':
     'Attempt to find Pandoc automatically',
   'Unable to find pandoc on your system. If it is installed, please manually enter a path.':

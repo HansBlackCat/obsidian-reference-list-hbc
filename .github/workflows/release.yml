@@ -2,33 +2,72 @@ name: Release Obsidian plugin
 
 on:
   push:
+    branches:
+      - main
     tags:
       - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
         with:
-          node-version: '18.x'
+          fetch-depth: 0
 
-      - name: Build plugin
-        run: |
-          npm install
-          npm run build
-
-      - name: Create release
+      # Tag push -> use the tag. Branch push / manual run -> use manifest.json version.
+      # Skip silently when a release for that version already exists, so ordinary
+      # commits don't try to re-release the same version.
+      - name: Resolve release tag
+        id: tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag="${GITHUB_REF#refs/tags/}"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag="${GITHUB_REF#refs/tags/}"
+          else
+            tag="$(node -p "require('./manifest.json').version")"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Release $tag already exists - nothing to do. Bump the version in manifest.json to publish a new one."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Will publish release $tag"
+          fi
+
+      - name: Use Node.js
+        if: steps.tag.outputs.exists == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      # npm, not yarn: yarn.lock pins @codemirror/language to a git+ssh URL,
+      # which CI runners can't clone.
+      - name: Install dependencies
+        if: steps.tag.outputs.exists == 'false'
+        run: npm install --no-audit --no-fund
+
+      - name: Build plugin
+        if: steps.tag.outputs.exists == 'false'
+        run: npm run build
+
+      - name: Create release
+        if: steps.tag.outputs.exists == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${{ steps.tag.outputs.tag }}"
 
           gh release create "$tag" \
-            --title="$tag" \
-            --notes-file="release-notes.md" \
+            --target "$GITHUB_SHA" \
+            --title "$tag" \
+            --generate-notes \
             main.js manifest.json styles.css
