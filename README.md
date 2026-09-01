@@ -17,6 +17,12 @@ Set up instructions:
 
 ## Changelog
 
+### v1.0.2
+
+- Renamed: plugin id `obsidian-pandoc-reference-list-hbc` -> `obsidian-reference-list-hbc`, display name "Pandoc Reference List HBC" -> "Reference List HBC", following the renamed repository
+  - **Upgrading from 1.0.1:** rename the plugin folder in `<vault>/.obsidian/plugins/` to `obsidian-reference-list-hbc` and move your `data.json` into it, otherwise settings are lost
+- Release workflow runs on `actions/checkout@v5` / `actions/setup-node@v5` and builds on Node 22 (Node 20 runners are deprecated)
+
 ### v1.0.1
 
 - Fix relative CSL paths: styles were cached under a different key than the one they are looked up with, which silently disabled every explicit CSL path (relative *and* absolute)

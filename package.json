@@ -1,6 +1,6 @@
 {
-  "name": "obsidian-pandoc-reference-list-hbc",
-  "version": "1.0.1",
+  "name": "obsidian-reference-list-hbc",
+  "version": "1.0.2",
   "description": "Displays a formatted reference in the sidebar for each pandoc citekey present in the current document.",
   "main": "main.js",
   "scripts": {

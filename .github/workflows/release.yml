@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -45,9 +45,9 @@ jobs:
 
       - name: Use Node.js
         if: steps.tag.outputs.exists == 'false'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '18.x'
+          node-version: '22.x'
 
       # npm, not yarn: yarn.lock pins @codemirror/language to a git+ssh URL,
       # which CI runners can't clone.
