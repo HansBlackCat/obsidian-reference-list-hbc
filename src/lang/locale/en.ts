@@ -7,6 +7,10 @@ export default {
     'The root path of your current vault. This is used to resolve relative paths in your bibliography and CSL files.',
   'Path to bibliography file': 'Path to bibliography file',
   'Select a bibliography file.': 'Select a bibliography file.',
+  'Cannot find this file': 'Cannot find this file',
+  'Cannot read this bibliography': 'Cannot read this bibliography',
+  'No references found in this file': 'No references found in this file',
+  references: 'references',
   'The absolute path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter.':
     'The absolute path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter.',
   'The path to your desired bibliography file. This can be overridden on a per-file basis by setting "bibliography" in the file\'s frontmatter. Can be an absolute path or one relative to your vault.':

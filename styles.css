@@ -408,3 +408,18 @@ body {
   max-width: 500px;
   width: 95vw;
 }
+
+.pwc-path-status {
+  margin-top: var(--size-2-2);
+  font-size: var(--font-ui-smaller);
+  word-break: break-all;
+  color: var(--text-muted);
+}
+
+.pwc-path-status.is-valid {
+  color: var(--text-success);
+}
+
+.pwc-path-status.is-error {
+  color: var(--text-error);
+}

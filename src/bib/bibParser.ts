@@ -355,8 +355,13 @@ export function parseBibliography(
 ): PartialCSLEntry[] {
   switch (ext.toLowerCase()) {
     case '.json':
-    case '.csljson':
-      return JSON.parse(content);
+    case '.csljson': {
+      const parsed = JSON.parse(content);
+      if (!Array.isArray(parsed)) {
+        throw new Error('expected a CSL JSON array of references');
+      }
+      return parsed;
+    }
     case '.yaml':
     case '.yml':
       return parseCSLYAML(content);

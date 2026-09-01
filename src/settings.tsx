@@ -1,4 +1,4 @@
-import { PluginSettingTab, Setting, TextComponent } from 'obsidian';
+import { PluginSettingTab, Setting, TextComponent, debounce } from 'obsidian';
 
 import { t } from './lang/helpers';
 import ReferenceList from './main';
@@ -16,6 +16,7 @@ import { cslListRaw } from './bib/cslList';
 import { langListRaw } from './bib/cslLangList';
 import { ZoteroPullSetting } from './settings/ZoteroPullSetting';
 import { getVaultRoot } from './helpers';
+import { bibToCSL, resolveVaultPath } from './bib/helpers';
 
 export const DEFAULT_SETTINGS: ReferenceListSettings = {
   tooltipDelay: 400,
@@ -87,6 +88,52 @@ export class ReferenceListSettingsTab extends PluginSettingTab {
       )
       .then((setting) => {
         let input: TextComponent;
+
+        // Reading the file confirms more than its presence: that it parses and
+        // how many references the plugin will actually see.
+        const status = setting.descEl.createDiv('pwc-path-status');
+        const checkPath = async (value: string) => {
+          status.removeClass('is-valid');
+          status.removeClass('is-error');
+
+          if (!value) {
+            status.setText('');
+            return;
+          }
+
+          const resolved = resolveVaultPath(value, getVaultRoot);
+          if (!resolved) {
+            status.addClass('is-error');
+            status.setText(`✗ ${t('Cannot find this file')}`);
+            return;
+          }
+
+          status.setText(`… ${resolved}`);
+
+          try {
+            const entries = await bibToCSL(value, getVaultRoot);
+
+            // The file exists and parses, but holds nothing citable: a typo
+            // pointing at the wrong file looks like this.
+            if (!entries.length) {
+              status.addClass('is-error');
+              status.setText(`✗ ${t('No references found in this file')}`);
+              return;
+            }
+
+            status.addClass('is-valid');
+            status.setText(
+              `✓ ${entries.length} ${t('references')} · ${resolved}`
+            );
+          } catch (e) {
+            status.addClass('is-error');
+            status.setText(
+              `✗ ${t('Cannot read this bibliography')}: ${e.message}`
+            );
+          }
+        };
+        const checkPathLater = debounce(checkPath, 500, true);
+
         setting.addText((text) => {
           input = text;
           text
@@ -94,6 +141,7 @@ export class ReferenceListSettingsTab extends PluginSettingTab {
             .onChange((value) => {
               const prev = this.plugin.settings.pathToBibliography;
               this.plugin.settings.pathToBibliography = value;
+              checkPathLater(value);
               this.plugin.saveSettings(() => {
                 this.plugin.bibManager.clearWatcher(prev);
                 this.plugin.bibManager.reinit(true);
@@ -113,12 +161,15 @@ export class ReferenceListSettingsTab extends PluginSettingTab {
               input.setValue(path[0]);
 
               this.plugin.settings.pathToBibliography = path[0];
+              checkPath(path[0]);
               this.plugin.saveSettings(() =>
                 this.plugin.bibManager.reinit(true)
               );
             }
           });
         });
+
+        checkPath(this.plugin.settings.pathToBibliography);
       });
 
     ReactDOM.render(

@@ -18,6 +18,7 @@ Set up instructions:
 
 ### v1.1.2
 
+- The bibliography path setting now shows whether the file actually resolves: `✓ 42 references · /resolved/path`, or a red `✗` naming the problem (not found, unreadable, or no references in it). Checked when the settings tab opens and as you type
 - Bibliography and CSL paths accept either path separator, so a vault synced between Windows and Linux/macOS can keep one path string (`\` now resolves on POSIX; Windows already accepted `/`). A leading separator is treated as vault relative
 
 ### v1.1.1

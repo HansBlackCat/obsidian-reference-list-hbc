@@ -52,6 +52,20 @@ global.setImmediate =
   // @ts-ignore
   global.setImmediate || ((fn, ...args) => global.setTimeout(fn, 0, ...args));
 
+describe('bibToCSL() rejects files that are not bibliographies', () => {
+  it('throws on JSON that is not a CSL array', async () => {
+    await expect(
+      bibToCSL(path.join(__dirname, '..', '..', '..', 'package.json'))
+    ).rejects.toThrow('expected a CSL JSON array of references');
+  });
+
+  it('returns nothing for a file with no entries', async () => {
+    expect(
+      await bibToCSL(path.join(__dirname, '..', '..', '..', 'README.md'))
+    ).toEqual([]);
+  });
+});
+
 describe('getBibPath()', () => {
   const vaultRoot = path.join(__dirname, '..', '..', '..');
   const expected = path.join(vaultRoot, 'src', 'bib', 'tests', 'test.bib');
