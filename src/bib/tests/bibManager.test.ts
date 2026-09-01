@@ -3,6 +3,7 @@
 import path from 'path';
 import {
   bibToCSL,
+  getBibPath,
   getCSLLocale,
   getCSLStyle,
   // getZBib,
@@ -50,6 +51,35 @@ describe('bibToCSL()', () => {
 global.setImmediate =
   // @ts-ignore
   global.setImmediate || ((fn, ...args) => global.setTimeout(fn, 0, ...args));
+
+describe('getBibPath()', () => {
+  const vaultRoot = path.join(__dirname, '..', '..', '..');
+  const expected = path.join(vaultRoot, 'src', 'bib', 'tests', 'test.bib');
+  const resolve = (p: string) => path.resolve(getBibPath(p, () => vaultRoot));
+
+  it('resolves a path relative to the vault root', () => {
+    expect(resolve(path.join('src', 'bib', 'tests', 'test.bib'))).toBe(
+      expected
+    );
+  });
+
+  it('accepts either path separator', () => {
+    // A vault synced between Windows and POSIX stores one string for both.
+    expect(resolve('src\\bib\\tests\\test.bib')).toBe(expected);
+    expect(resolve('src/bib/tests/test.bib')).toBe(expected);
+  });
+
+  it('treats a leading separator as vault relative', () => {
+    expect(resolve('/src/bib/tests/test.bib')).toBe(expected);
+    expect(resolve('\\src\\bib\\tests\\test.bib')).toBe(expected);
+  });
+
+  it('throws when the file cannot be found', () => {
+    expect(() => getBibPath('nope.bib', () => vaultRoot)).toThrow(
+      "cannot access bibliography file 'nope.bib'"
+    );
+  });
+});
 
 describe('getLocale()', () => {
   it('fetches a locale', async () => {

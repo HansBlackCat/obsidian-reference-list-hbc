@@ -16,6 +16,10 @@ Set up instructions:
 
 ## Changelog
 
+### v1.1.2
+
+- Bibliography and CSL paths accept either path separator, so a vault synced between Windows and Linux/macOS can keep one path string (`\` now resolves on POSIX; Windows already accepted `/`). A leading separator is treated as vault relative
+
 ### v1.1.1
 
 - Dropped the last pandoc references from the interface: the settings icon's label, the "no bibliography configured" notice, and the `[@pandoc]` example citekey in the inline citation settings (now `[@citekey]`)

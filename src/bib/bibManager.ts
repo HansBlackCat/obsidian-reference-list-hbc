@@ -65,20 +65,28 @@ export interface FileCache {
 }
 
 // Resolve a path set in a note's frontmatter. Relative paths are looked up
-// next to the note first, then relative to the vault root. URLs and paths that
-// cannot be resolved are returned untouched.
+// next to the note first, then relative to the vault root. Either path
+// separator is accepted, so one vault works on Windows and on POSIX. URLs and
+// paths that cannot be resolved are returned untouched.
 function resolveScopedPath(file: TFile, filePath?: string) {
   if (!filePath || /^http/.test(filePath)) return filePath;
-  if (existsSync(filePath)) return filePath;
+
+  const swapped = filePath.replace(/[\\/]+/g, path.sep);
+  const variants = swapped === filePath ? [filePath] : [filePath, swapped];
+
+  for (const variant of variants) {
+    if (existsSync(variant)) return variant;
+  }
 
   const root = getVaultRoot();
   if (!root) return filePath;
 
-  const nextToNote = path.join(root, path.dirname(file.path), filePath);
-  if (existsSync(nextToNote)) return nextToNote;
-
-  const fromVaultRoot = path.join(root, filePath);
-  if (existsSync(fromVaultRoot)) return fromVaultRoot;
+  for (const base of [path.join(root, path.dirname(file.path)), root]) {
+    for (const variant of variants) {
+      const resolved = path.join(base, variant);
+      if (existsSync(resolved)) return resolved;
+    }
+  }
 
   return filePath;
 }

@@ -14,6 +14,15 @@ function ensureDir(dir: string) {
   }
 }
 
+// A vault synced between Windows and Linux/macOS stores one path string for
+// both, so accept either separator. Windows already accepts `/`, so in practice
+// this is what makes `\` work on POSIX. It is only tried as a fallback, since
+// `\` is a legal character in a POSIX filename.
+function separatorVariants(filePath: string) {
+  const swapped = filePath.replace(/[\\/]+/g, path.sep);
+  return swapped === filePath ? [filePath] : [filePath, swapped];
+}
+
 // Resolve a user supplied path: try it as given (absolute, or relative to the
 // process cwd), then relative to the vault root. Returns null if neither exists.
 export function resolveVaultPath(
@@ -21,12 +30,19 @@ export function resolveVaultPath(
   getVaultRoot?: () => string
 ): string | null {
   if (!filePath) return null;
-  if (fs.existsSync(filePath)) return filePath;
+
+  const variants = separatorVariants(filePath);
+
+  for (const variant of variants) {
+    if (fs.existsSync(variant)) return variant;
+  }
 
   const root = getVaultRoot?.();
   if (root) {
-    const fromVault = path.join(root, filePath);
-    if (fs.existsSync(fromVault)) return fromVault;
+    for (const variant of variants) {
+      const fromVault = path.join(root, variant);
+      if (fs.existsSync(fromVault)) return fromVault;
+    }
   }
 
   return null;
