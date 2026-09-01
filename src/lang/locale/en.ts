@@ -19,19 +19,6 @@ export default {
     'Path to a CSL file. This can be an absolute path or one relative to your vault. This will override the style selected above. This can be overridden on a per-file basis by setting "csl" or "citation-style" in the file\'s frontmatter. A URL can be supplied when setting the style via frontmatter.',
   'Select a CSL file located on your computer':
     'Select a CSL file located on your computer',
-  'Pandoc executable path (auto detected)':
-    'Pandoc executable path (auto detected)',
-  'The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section.':
-    'The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section.',
-  "The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and will use this path if it fails to do so. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows.":
-    "The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and will use this path if it fails to do so. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows.",
-  'Fallback path to Pandoc': 'Fallback path to Pandoc',
-  "Used when pandoc cannot be located automatically. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows.":
-    "Used when pandoc cannot be located automatically. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows.",
-  'Attempt to find Pandoc automatically':
-    'Attempt to find Pandoc automatically',
-  'Unable to find pandoc on your system. If it is installed, please manually enter a path.':
-    'Unable to find pandoc on your system. If it is installed, please manually enter a path.',
   'Hide links in references': 'Hide links in references',
   'Replace links with link icons to save space.':
     'Replace links with link icons to save space.',
@@ -65,8 +52,6 @@ export default {
   'Include [[@pandoc]] citations in the reference list and format them as inline citations in live preview mode.':
     'Include [[@pandoc]] citations in the reference list and format them as inline citations in live preview mode.',
   // src/view.ts
-  'Please provide the path to pandoc in the Pandoc Reference List plugin settings.':
-    'Please provide the path to pandoc in the Pandoc Reference List plugin settings.',
   'Click to copy': 'Click to copy',
   'Copy list': 'Copy list',
   'No citations found in the current document.':

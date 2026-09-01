@@ -24,39 +24,25 @@ import { existsSync, rmSync } from 'fs';
 
 describe('bibToCSL()', () => {
   it('returns json from json', async () => {
-    expect(
-      await bibToCSL(
-        path.join(__dirname, 'test.json'),
-        '/opt/homebrew/bin/pandoc'
-      )
-    ).toEqual(testCSL);
+    expect(await bibToCSL(path.join(__dirname, 'test.json'))).toEqual(testCSL);
   });
 
   it('returns json from bib', async () => {
-    expect(
-      await bibToCSL(
-        path.join(__dirname, 'test.bib'),
-        '/opt/homebrew/bin/pandoc'
-      )
-    ).toEqual(testBIBCSL);
+    expect(await bibToCSL(path.join(__dirname, 'test.bib'))).toEqual(
+      testBIBCSL
+    );
   });
 
   it('returns json from bib2', async () => {
-    expect(
-      await bibToCSL(
-        path.join(__dirname, 'test2.bib'),
-        '/opt/homebrew/bin/pandoc'
-      )
-    ).toEqual(testBIB2CSL);
+    expect(await bibToCSL(path.join(__dirname, 'test2.bib'))).toEqual(
+      testBIB2CSL
+    );
   });
 
   it('returns json from yaml', async () => {
-    expect(
-      await bibToCSL(
-        path.join(__dirname, 'test.yaml'),
-        '/opt/homebrew/bin/pandoc'
-      )
-    ).toEqual(testYAMLCSL);
+    expect(await bibToCSL(path.join(__dirname, 'test.yaml'))).toEqual(
+      testYAMLCSL
+    );
   });
 });
 

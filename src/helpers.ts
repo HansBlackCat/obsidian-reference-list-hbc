@@ -1,6 +1,4 @@
 import { FileSystemAdapter, htmlToMarkdown } from 'obsidian';
-import { shellPath } from 'shell-path';
-import which from 'which';
 
 export function getVaultRoot() {
   // This is a desktop only plugin, so the adapter is expected to be a
@@ -10,16 +8,6 @@ export function getVaultRoot() {
     return adapter.getBasePath();
   }
   return null;
-}
-
-// Locate pandoc on the user's machine. Returns null when it cannot be found;
-// callers decide whether that is fatal.
-export async function getPandocPath(): Promise<string | null> {
-  try {
-    return await which('pandoc');
-  } catch (e) {
-    return null;
-  }
 }
 
 export function copyElToClipboard(el: HTMLElement) {
@@ -47,27 +35,6 @@ export class PromiseCapability<T> {
         this.settled = true;
       };
     });
-  }
-}
-
-export async function fixPath() {
-  if (process.platform === 'win32') {
-    return;
-  }
-
-  try {
-    const path = await shellPath();
-
-    process.env.PATH =
-      path ||
-      [
-        './node_modules/.bin',
-        '/.nodebrew/current/bin',
-        '/usr/local/bin',
-        process.env.PATH,
-      ].join(':');
-  } catch (e) {
-    console.error(e);
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "obsidian-reference-list-hbc",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Displays a formatted reference in the sidebar for each pandoc citekey present in the current document.",
   "main": "main.js",
   "scripts": {
@@ -10,11 +10,11 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src/**/* --fix",
     "prettier": "prettier --write \"./src/**/*.{ts,tsx}\"",
-    "clean": "yarn prettier && yarn lint:fix",
+    "clean": "npm run prettier && npm run lint:fix",
     "test": "jest",
-		"rlnotes": "git log $(git describe --tags --abbrev=0)..HEAD --oneline > release-notes.md && git add release-notes.md",
-		"bump": "node version-bump.mjs && git add package.json manifest.json versions.json && yarn rlnotes",
-		"release": "git commit -m $npm_package_version && git tag $npm_package_version && git push && git push --tags"
+    "rlnotes": "git log $(git describe --tags --abbrev=0)..HEAD --oneline > release-notes.md && git add release-notes.md",
+    "bump": "node version-bump.mjs && git add package.json manifest.json versions.json && npm run rlnotes",
+    "release": "git commit -m $npm_package_version && git tag $npm_package_version && git push && git push --tags"
   },
   "keywords": [],
   "author": "HansBlackCat",
@@ -26,10 +26,10 @@
     "@codemirror/language": "https://github.com/lishid/cm-language",
     "@types/download": "^8.0.2",
     "@types/jest": "27.4.1",
+    "@types/js-yaml": "^4.0.9",
     "@types/lru-cache": "7.6.1",
     "@types/node": "16.11.6",
     "@types/react-dom": "18.2.6",
-    "@types/which": "2.0.1",
     "@typescript-eslint/eslint-plugin": "5.2.0",
     "@typescript-eslint/parser": "5.2.0",
     "babel-jest": "27.5.1",
@@ -44,22 +44,37 @@
     "xml-js": "1.6.11"
   },
   "dependencies": {
+    "@retorquere/bibtex-parser": "^10.0.1",
     "citeproc": "2.4.63",
     "download": "8.0.0",
-    "execa": "6.1.0",
     "fast-deep-equal": "^3.1.3",
     "fuse.js": "6.6.2",
+    "js-yaml": "^5.4.1",
     "lru-cache": "7.8.1",
     "preact": "^10.16.0",
     "react": "npm:@preact/compat",
     "react-dom": "npm:@preact/compat",
     "react-select": "5.7.3",
-    "shell-path": "3.0.0",
-    "text-clipper": "^2.2.0",
-    "which": "2.0.2"
+    "text-clipper": "^2.2.0"
   },
   "jest": {
+    "testEnvironment": "jsdom",
     "transformIgnorePatterns": [],
-    "testEnvironment": "jsdom"
+    "moduleNameMapper": {
+      "^@retorquere/bibtex-parser$": "<rootDir>/node_modules/@retorquere/bibtex-parser/dist/esm/index.js"
+    },
+    "transform": {
+      "^.+\\.(m?js|jsx|ts|tsx)$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "mjs",
+      "cjs",
+      "jsx",
+      "ts",
+      "tsx",
+      "json",
+      "node"
+    ]
   }
 }

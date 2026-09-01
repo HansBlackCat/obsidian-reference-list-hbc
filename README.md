@@ -1,4 +1,4 @@
-## Obsidian Pandoc Reference List
+## Reference List HBC
 
 Forked from [mgmeyers/obsidian-pandoc-reference-list](https://github.com/mgmeyers/obsidian-pandoc-reference-list)
 
@@ -7,15 +7,21 @@ Under `GPL-3.0 license`
 Displays a formatted reference in the sidebar for each pandoc citekey present in the current document.
 
 Set up instructions:
-- Ensure [Pandoc](https://pandoc.org/) is installed. **This plugin requires at least version 2.11**.
-- Supply a path to a compatible bibliography file
+- Supply a path to a compatible bibliography file (`.bib`, `.bibtex`, `.yaml`, or CSL `.json`). **Pandoc is no longer required.**
 - (Optional) Supply a path or URL to a compatible [CSL style](https://citationstyles.org/)
-- Run "Pandoc Reference List: Show reference list" from Obsidian command palette to display References tab in the sidebar
+- Run "Reference List HBC: Show reference list" from Obsidian command palette to display References tab in the sidebar
 
 <img src="https://raw.githubusercontent.com/mgmeyers/obsidian-pandoc-reference-list/main/Screen%20Shot.png" alt="A screenshot of the plugin's works cited list">
 
 
 ## Changelog
+
+### v1.1.0
+
+- **Pandoc is no longer required.** Bibliographies are parsed in-process: BibTeX/BibLaTeX via [`@retorquere/bibtex-parser`](https://github.com/retorquere/bibtex-parser), CSL YAML via `js-yaml`, CSL JSON directly
+  - Output is verified byte-identical to `pandoc -t csljson` on every bibliography fixture in this repo (`test.bib`, `test2.bib`, `test.yaml`), including sentence-cased titles with brace protection, smart apostrophes, date-parts and language codes
+  - The "Pandoc executable path" and "Fallback path to Pandoc" settings are gone, as are the `execa`, `which` and `shell-path` dependencies
+- Groundwork for mobile: the parser bundles for the browser, unlike the previously considered `citation-js` (which pulls in `node:http`/`node:https`/`node:zlib`). Filesystem and Electron usage still keeps the plugin desktop-only for now
 
 ### v1.0.2
 

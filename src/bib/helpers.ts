@@ -1,10 +1,10 @@
-import { execa } from 'execa';
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
 import download from 'download';
 import { request } from 'http';
 import { CSLList, PartialCSLEntry } from './types';
+import { parseBibliography } from './bibParser';
 
 export const DEFAULT_ZOTERO_PORT = '23119';
 
@@ -44,42 +44,17 @@ export function getBibPath(bibPath: string, getVaultRoot?: () => string) {
 
 export async function bibToCSL(
   bibPath: string,
-  pathToPandoc: string,
   getVaultRoot?: () => string
 ): Promise<PartialCSLEntry[]> {
   bibPath = getBibPath(bibPath, getVaultRoot);
 
-  const parsed = path.parse(bibPath);
-  if (parsed.ext === '.json') {
-    return new Promise((res, rej) => {
-      fs.readFile(bibPath, (err, data) => {
-        if (err) return rej(err);
-        try {
-          res(JSON.parse(data.toString()));
-        } catch (e) {
-          rej(e);
-        }
-      });
-    });
+  const content = await fs.promises.readFile(bibPath, 'utf8');
+
+  try {
+    return parseBibliography(content, path.parse(bibPath).ext);
+  } catch (e) {
+    throw new Error(`bibToCSL: cannot parse '${bibPath}': ${e.message}`);
   }
-
-  if (!pathToPandoc) {
-    throw new Error('bibToCSL: path to pandoc is required for non CSL files.');
-  }
-
-  if (!fs.existsSync(pathToPandoc)) {
-    throw new Error(`bibToCSL: cannot access pandoc at '${pathToPandoc}'.`);
-  }
-
-  const args = [bibPath, '-t', 'csljson', '--quiet'];
-
-  const res = await execa(pathToPandoc, args);
-
-  if (res.stderr) {
-    throw new Error(`bibToCSL: ${res.stderr}`);
-  }
-
-  return JSON.parse(res.stdout);
 }
 
 export async function getCSLLocale(

@@ -278,11 +278,7 @@ export class BibManager {
 
     if (settings.bibliography) {
       try {
-        const bib = await bibToCSL(
-          settings.bibliography,
-          this.plugin.settings.pathToPandoc,
-          getVaultRoot
-        );
+        const bib = await bibToCSL(settings.bibliography, getVaultRoot);
         bibCache = new Map();
 
         for (const entry of bib) {
@@ -321,11 +317,7 @@ export class BibManager {
 
     if (!settings.pathToBibliography) return;
     if (!fromCache || this.bibCache.size === 0) {
-      const bib = await bibToCSL(
-        settings.pathToBibliography,
-        settings.pathToPandoc,
-        getVaultRoot
-      );
+      const bib = await bibToCSL(settings.pathToBibliography, getVaultRoot);
 
       this.bibCache = new Map();
       const bibPath = getBibPath(settings.pathToBibliography, getVaultRoot);

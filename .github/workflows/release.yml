@@ -48,12 +48,11 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '22.x'
+          cache: 'npm'
 
-      # npm, not yarn: yarn.lock pins @codemirror/language to a git+ssh URL,
-      # which CI runners can't clone.
       - name: Install dependencies
         if: steps.tag.outputs.exists == 'false'
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Build plugin
         if: steps.tag.outputs.exists == 'false'

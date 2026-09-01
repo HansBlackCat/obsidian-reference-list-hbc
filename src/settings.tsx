@@ -18,8 +18,6 @@ import { ZoteroPullSetting } from './settings/ZoteroPullSetting';
 import { getVaultRoot } from './helpers';
 
 export const DEFAULT_SETTINGS: ReferenceListSettings = {
-  pathToPandoc: '',
-  pathToPandocFallback: '',
   tooltipDelay: 400,
   zoteroGroups: [],
   renderCitations: true,
@@ -34,11 +32,6 @@ export interface ZoteroGroup {
 }
 
 export interface ReferenceListSettings {
-  // The path actually used to invoke pandoc: auto detected when possible,
-  // otherwise a copy of pathToPandocFallback.
-  pathToPandoc: string;
-  // User supplied path, never overwritten by auto detection.
-  pathToPandocFallback: string;
   pathToBibliography?: string;
 
   cslStyleURL?: string;
@@ -82,53 +75,6 @@ export class ReferenceListSettingsTab extends PluginSettingTab {
         setting.addText((text) => {
           text.setValue(getVaultRoot() ?? '');
           text.setDisabled(true);
-        });
-      });
-
-    let detectedInput: TextComponent;
-    new Setting(containerEl)
-      .setName(t('Pandoc executable path (auto detected)'))
-      .setDesc(
-        t(
-          'The absolute path to the Pandoc executable. This plugin will attempt to locate pandoc for you and if it fails to do so, you can manually enter a path in next section.'
-        )
-      )
-      .then((setting) => {
-        setting.addText((text) => {
-          detectedInput = text;
-          text.setValue(this.plugin.settings.pathToPandoc);
-          text.setDisabled(true);
-        });
-
-        setting.addExtraButton((b) => {
-          b.setIcon('magnifying-glass');
-          b.setTooltip(t('Attempt to find Pandoc automatically'));
-          b.onClick(() => {
-            this.plugin.resolvePandocPath(true).then((pathToPandoc) => {
-              detectedInput.setValue(pathToPandoc);
-            });
-          });
-        });
-      });
-
-    new Setting(containerEl)
-      .setName(t('Fallback path to Pandoc'))
-      .setDesc(
-        t(
-          "Used when pandoc cannot be located automatically. To find pandoc, use the output of 'which pandoc' in a terminal on Mac/Linux or 'Get-Command pandoc' in powershell on Windows."
-        )
-      )
-      .then((setting) => {
-        setting.addText((text) => {
-          text
-            .setValue(this.plugin.settings.pathToPandocFallback)
-            .onChange((value) => {
-              this.plugin.settings.pathToPandocFallback = value;
-              this.plugin.saveSettings();
-              this.plugin.resolvePandocPath().then((pathToPandoc) => {
-                detectedInput.setValue(pathToPandoc);
-              });
-            });
         });
       });
 

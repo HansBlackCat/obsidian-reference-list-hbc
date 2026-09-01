@@ -2,7 +2,6 @@ import {
   Events,
   MarkdownView,
   Menu,
-  Notice,
   Plugin,
   WorkspaceLeaf,
   debounce,
@@ -23,12 +22,7 @@ import {
 } from './settings';
 import { TooltipManager } from './tooltip';
 import { ReferenceListView, viewType } from './view';
-import {
-  PromiseCapability,
-  fixPath,
-  getPandocPath,
-  getVaultRoot,
-} from './helpers';
+import { PromiseCapability, getVaultRoot } from './helpers';
 import path from 'path';
 import { BibManager } from './bib/bibManager';
 import { CiteSuggest } from './citeSuggest/citeSuggest';
@@ -83,15 +77,8 @@ export default class ReferenceList extends Plugin {
       editorTooltipHandler(this.tooltipManager),
     ]);
 
-    // No need to block execution
-    fixPath().then(async () => {
-      // Never let a failed lookup block init: without pandoc the plugin still
-      // works with CSL JSON bibliographies.
-      await this.resolvePandocPath();
-
-      this.initPromise.resolve();
-      this.app.workspace.trigger('parse-style-settings');
-    });
+    this.initPromise.resolve();
+    this.app.workspace.trigger('parse-style-settings');
 
     this.addCommand({
       id: 'focus-reference-list-view',
@@ -300,28 +287,6 @@ export default class ReferenceList extends Plugin {
     // Refresh the reference list when settings change
     this.emitSettingsUpdate(cb);
     await this.saveData(this.settings);
-  }
-
-  // Auto detected pandoc wins; the user supplied fallback is only used when the
-  // lookup fails, and is never overwritten by it.
-  async resolvePandocPath(notifyOnFailure = false) {
-    const detected = await getPandocPath();
-    const resolved = detected || this.settings.pathToPandocFallback || '';
-
-    if (resolved !== this.settings.pathToPandoc) {
-      this.settings.pathToPandoc = resolved;
-      await this.saveSettings();
-    }
-
-    if (!resolved && notifyOnFailure) {
-      new Notice(
-        t(
-          'Unable to find pandoc on your system. If it is installed, please manually enter a path.'
-        )
-      );
-    }
-
-    return resolved;
   }
 
   emitSettingsUpdate = debounce(
