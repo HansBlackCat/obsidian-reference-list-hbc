@@ -28,9 +28,6 @@ export default {
   'Tooltip delay': 'Tooltip delay',
   'Set the amount of time (in milliseconds) to wait before displaying tooltips.':
     'Set the amount of time (in milliseconds) to wait before displaying tooltips.',
-  'Validate Pandoc configuration': 'Validate Pandoc configuration',
-  Validate: 'Validate',
-  'Validation successful': 'Validation successful',
   'Show citekey suggestions': 'Show citekey suggestions',
   'When enabled, an autocomplete dialog will display when typing citation keys.':
     'When enabled, an autocomplete dialog will display when typing citation keys.',
@@ -44,13 +41,13 @@ export default {
     'Render live preview inline citations',
   'Render reading mode inline citations':
     'Render reading mode inline citations',
-  'Convert [@pandoc] citations to formatted inline citations in live preview mode.':
-    'Convert [@pandoc] citations to formatted inline citations in live preview mode.',
-  'Convert [@pandoc] citations to formatted inline citations in reading mode.':
-    'Convert [@pandoc] citations to formatted inline citations in reading mode.',
+  'Convert [@citekey] citations to formatted inline citations in live preview mode.':
+    'Convert [@citekey] citations to formatted inline citations in live preview mode.',
+  'Convert [@citekey] citations to formatted inline citations in reading mode.':
+    'Convert [@citekey] citations to formatted inline citations in reading mode.',
   'Process citations in links': 'Process citations in links',
-  'Include [[@pandoc]] citations in the reference list and format them as inline citations in live preview mode.':
-    'Include [[@pandoc]] citations in the reference list and format them as inline citations in live preview mode.',
+  'Include [[@citekey]] citations in the reference list and format them as inline citations in live preview mode.':
+    'Include [[@citekey]] citations in the reference list and format them as inline citations in live preview mode.',
   // src/view.ts
   'Click to copy': 'Click to copy',
   'Copy list': 'Copy list',
@@ -65,10 +62,10 @@ export default {
   'Start Zotero and try again.': 'Start Zotero and try again.',
   'Libraries to include in bibliography':
     'Libraries to include in bibliography',
-  'Please provide the path to your pandoc compatible bibliography file in the Pandoc Reference List plugin settings.':
-    'Please provide the path to your pandoc compatible bibliography file in the Pandoc Reference List plugin settings.',
+  'Please provide the path to your bibliography file in the plugin settings.':
+    'Please provide the path to your bibliography file in the plugin settings.',
   'Refresh bibliography': 'Refresh bibliography',
-  'Pandoc reference list settings': 'Pandoc reference list settings',
+  'Reference list settings': 'Reference list settings',
   // src/tooltip.ts
   'No citation found for ': 'No citation found for ',
 

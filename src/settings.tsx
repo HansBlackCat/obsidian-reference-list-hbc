@@ -247,7 +247,7 @@ export class ReferenceListSettingsTab extends PluginSettingTab {
       .setName(t('Render live preview inline citations'))
       .setDesc(
         t(
-          'Convert [@pandoc] citations to formatted inline citations in live preview mode.'
+          'Convert [@citekey] citations to formatted inline citations in live preview mode.'
         )
       )
       .addToggle((text) =>
@@ -263,7 +263,7 @@ export class ReferenceListSettingsTab extends PluginSettingTab {
       .setName(t('Render reading mode inline citations'))
       .setDesc(
         t(
-          'Convert [@pandoc] citations to formatted inline citations in reading mode.'
+          'Convert [@citekey] citations to formatted inline citations in reading mode.'
         )
       )
       .addToggle((text) =>
@@ -279,7 +279,7 @@ export class ReferenceListSettingsTab extends PluginSettingTab {
       .setName(t('Process citations in links'))
       .setDesc(
         t(
-          'Include [[@pandoc]] citations in the reference list and format them as inline citations in live preview mode.'
+          'Include [[@citekey]] citations in the reference list and format them as inline citations in live preview mode.'
         )
       )
       .addToggle((text) =>
