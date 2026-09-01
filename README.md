@@ -16,6 +16,11 @@ Set up instructions:
 
 ## Changelog
 
+### v1.1.1
+
+- Dropped the last pandoc references from the interface: the settings icon's label, the "no bibliography configured" notice, and the `[@pandoc]` example citekey in the inline citation settings (now `[@citekey]`)
+- Removed the unused "Validate Pandoc configuration" strings
+
 ### v1.1.0
 
 - **Pandoc is no longer required.** Bibliographies are parsed in-process: BibTeX/BibLaTeX via [`@retorquere/bibtex-parser`](https://github.com/retorquere/bibtex-parser), CSL YAML via `js-yaml`, CSL JSON directly
