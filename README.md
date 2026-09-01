@@ -21,6 +21,7 @@ Set up instructions:
 - **Pandoc is no longer required.** Bibliographies are parsed in-process: BibTeX/BibLaTeX via [`@retorquere/bibtex-parser`](https://github.com/retorquere/bibtex-parser), CSL YAML via `js-yaml`, CSL JSON directly
   - Output is verified byte-identical to `pandoc -t csljson` on every bibliography fixture in this repo (`test.bib`, `test2.bib`, `test.yaml`), including sentence-cased titles with brace protection, smart apostrophes, date-parts and language codes
   - The "Pandoc executable path" and "Fallback path to Pandoc" settings are gone, as are the `execa`, `which` and `shell-path` dependencies
+- The cache directory moved from `<vault>/.pandoc` to `<vault>/.reference-list`; an existing `.pandoc` folder is moved on first load, so cached styles and locales are kept
 - Groundwork for mobile: the parser bundles for the browser, unlike the previously considered `citation-js` (which pulls in `node:http`/`node:https`/`node:zlib`). Filesystem and Electron usage still keeps the plugin desktop-only for now
 
 ### v1.0.2

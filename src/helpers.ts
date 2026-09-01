@@ -1,4 +1,5 @@
 import { FileSystemAdapter, htmlToMarkdown } from 'obsidian';
+import fs from 'fs';
 
 export function getVaultRoot() {
   // This is a desktop only plugin, so the adapter is expected to be a
@@ -8,6 +9,18 @@ export function getVaultRoot() {
     return adapter.getBasePath();
   }
   return null;
+}
+
+// The cache directory was called `.pandoc` back when the plugin shelled out to
+// pandoc. Move it instead of leaving an orphaned folder behind and
+// re-downloading every CSL style and locale.
+export function migrateCacheDir(from: string, to: string) {
+  try {
+    if (!fs.existsSync(from) || fs.existsSync(to)) return;
+    fs.renameSync(from, to);
+  } catch (e) {
+    console.error('Error migrating the cache directory', e);
+  }
 }
 
 export function copyElToClipboard(el: HTMLElement) {

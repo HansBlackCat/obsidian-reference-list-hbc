@@ -22,7 +22,7 @@ import {
 } from './settings';
 import { TooltipManager } from './tooltip';
 import { ReferenceListView, viewType } from './view';
-import { PromiseCapability, getVaultRoot } from './helpers';
+import { PromiseCapability, getVaultRoot, migrateCacheDir } from './helpers';
 import path from 'path';
 import { BibManager } from './bib/bibManager';
 import { CiteSuggest } from './citeSuggest/citeSuggest';
@@ -53,7 +53,9 @@ export default class ReferenceList extends Plugin {
       (leaf: WorkspaceLeaf) => new ReferenceListView(leaf, this)
     );
 
-    this.cacheDir = path.join(getVaultRoot(), '.pandoc');
+    const vaultRoot = getVaultRoot();
+    this.cacheDir = path.join(vaultRoot, '.reference-list');
+    migrateCacheDir(path.join(vaultRoot, '.pandoc'), this.cacheDir);
     this.emitter = new Events();
     this.bibManager = new BibManager(this);
     this.initPromise.promise
